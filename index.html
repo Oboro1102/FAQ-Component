@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="FAQ component" />
+    <meta name="author" content="Oboro" />
+    <title>FAQ component</title>
+    <link href="css/bootstrap-reboot.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <section class="content-wrap">
+        <h1 class="section__title">FAQ</h1>
+        <div class="faq">
+            <div class="faq__wrap">
+                <div class="faq__wrap__nav">
+                    <faq-category v-for="(item, index) in QAData" :key="index" :item="item"></faq-category>
+                </div>
+                <transition-group class="faq__wrap__content" tag="div" name="fade">
+                    <faq-collapse v-for="(item, index) in collapseData" :key="item.title">
+                        <div slot="title">{{item.title}}</div>
+                        <div slot="answer">{{item.answer}}</div>
+                    </faq-collapse>
+                </transition-group>
+            </div>
+        </div>
+    </section>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    <script>
+        let faqCategory = {
+            props: ['item'],
+            template: `
+                <div class="faq__wrap__nav__item" :class="{ active: isActive }" role="button" @click="showContent">
+                    <h4>{{item.category}}</h4>
+                </div>
+                `,
+            data() {
+                return {
+                    isActive: false
+                }
+            },
+            methods: {
+                showContent() {
+                    // pass question data to parent
+                    this.$parent.collapseData = this.item.qusetion;
+                    // toggle active status
+                    this.isActive = true;
+                    // cancel non-active content
+                    this.$parent.$children.forEach(element => {
+                        if (element._uid != this._uid) {
+                            element.isActive = false;
+                        }
+                    });
+                }
+            },
+        },
+            faqCollapse = {
+                template: `
+                <div class="faq__wrap__content__item">
+                    <h5 class="faq__wrap__content__item__title" @click="toggleAnswer">
+                        <slot name="title"></slot>
+                        <svg width="1rem" height="1rem" class="toggleIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50">
+                            <line x1="8.5" y1="25" x2="41.5" y2="25"/>
+                            <line x1="25" y1="8.5" x2="25" y2="41.5"/>
+                        </svg>
+                    </h5>
+                    <transition name="slide" mode="in-out" appear>
+                        <div v-if="isShow" class="faq__wrap__content__item__answer">
+                            <slot name="answer"></slot>
+                        </div>	
+                    </transition>				
+                </div>
+                `,
+                data() {
+                    return {
+                        isShow: false
+                    }
+                },
+                watch: {
+                    isShow() { // change icon
+                        return this.isShow ? this.$el.children[0].lastChild.style.transform = 'rotate(45deg)' : this.$el.children[0].lastChild.removeAttribute('style');
+                    }
+                },
+                methods: {
+                    toggleAnswer() {
+                        // show answer
+                        this.isShow = !this.isShow;
+                        // close other answer
+                        this.$parent.$children.forEach(element => {
+                            if (element._uid != this._uid) {
+                                element.isShow = false;
+                            }
+                        });
+                    },
+                },
+                mounted() {
+                    setTimeout(() => {
+                        this.$parent.$children[0].isShow = true;
+                    }, 100);
+                },
+            };
+
+        const vm = new Vue({
+            el: '.faq',
+            components: {
+                'faq-collapse': faqCollapse,
+                'faq-category': faqCategory,
+            },
+            data() {
+                return {
+                    isShow: false,
+                    isActive: false,
+                    collapseData: null,
+                }
+            },
+            computed: {
+                QAData() {
+                    return [{
+                        category: 'Category 01',
+                        qusetion: [{
+                            title: 'Question 1-01',
+                            answer: 'There will show your answer......'
+                        }, {
+                            title: 'Question 1-02',
+                            answer: 'There will show your answer......'
+                        }, {
+                            title: 'Question 1-03',
+                            answer: 'There will show your answer......'
+                        }, {
+                            title: 'Question 1-04',
+                            answer: 'There will show your answer......'
+                        }, {
+                            title: 'Question 1-05',
+                            answer: 'There will show your answer......'
+                        }, {
+                            title: 'Question 1-06',
+                            answer: 'There will show your answer......'
+                        }]
+                    }, {
+                        category: 'Category 02',
+                        qusetion: [{
+                            title: 'Question 2-01',
+                            answer: 'There will show your answer......'
+                        }, {
+                            title: 'Question 2-02',
+                            answer: 'There will show your answer......'
+                        }, {
+                            title: 'Question 2-03',
+                            answer: 'There will show your answer......'
+                        }, {
+                            title: 'Question 2-04',
+                            answer: 'There will show your answer......'
+                        }]
+                    }]
+                }
+            },
+            mounted() {
+                // show first data
+                this.collapseData = this.QAData[0].qusetion;
+                this.$children[0].isActive = true;
+            },
+        });
+    </script>
+</body>
+
+</html>
