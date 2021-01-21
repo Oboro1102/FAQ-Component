@@ -68,11 +68,11 @@
                             <line x1="25" y1="8.5" x2="25" y2="41.5"/>
                         </svg>
                     </h5>
-                    <transition name="slide" mode="in-out" appear>
-                        <div v-if="isShow" class="faq__content__item__answer">
+                    <div v-if="isShow" class="faq__content__item__answer">
+                        <transition name="slide" mode="out-in" appear>
                             <slot name="answer"></slot>
-                        </div>	
-                    </transition>				
+                        </transition>
+                    </div>	
                 </div>
                 `,
                 data() {
