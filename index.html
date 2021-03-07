@@ -14,7 +14,7 @@
 <body>
     <main class="content-wrap">
         <h1 class="section__title">FAQ</h1>
-        <section class="faq">
+        <section class="faq" v-cloak>
             <div class="faq__wrap">
                 <div class="faq__nav">
                     <faq-category v-for="(item, index) in QAData" :key="index" :item="item"></faq-category>
